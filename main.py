@@ -1,45 +1,57 @@
 ﻿import re
 
-def print_hi(name):
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
 
-class Road:
-  def __init__(self, startstage, endstage, transport):
-    self.startStage = startstage
-    self.endStage = endstage
-    self.transport = transport
-
-  def __repr__(self):
-      return "Road from %s to %s, for %s" % (self.startStage, self.endStage, self.transport)
-
-  def __str__(self):
-      return "Road from %s to %s, for %s" % (self.startStage, self.endStage, self.transport)
+def add_edge(matrix, i, j, transweight):
+    matrix[i][j] = transweight
+    matrix[j][i] = transweight
 
 
-def constructRoadGraph(inputfile):
-    countedroads = 0
-    constructroads = []
+def display_matrix(matrix):
+    for row in matrix:
+        print(" ".join(map(str, row)))
 
-    intputFile = open(inputfile)
 
-    #Line structure: "a b", with a: number of stages, b: number of roads
-    stagelist = re.sub(r'[^0-9\s]', '', intputFile.readline()).split() #Splits on whitespaces, so should be right
-    expectedroads = int(stagelist[1])
-    expectedstages = int(stagelist[0])
+def constructRoadMatrix(src):
+    src = open(src)
+    stagecount = int(src.readline()[4:].split()[0])
+    mat = [[0] * stagecount for _ in range(stagecount)]
 
-    # Line structure: "a b c", with a: root stage, b: dest stage, c: transport
-    # We're using re.sub to ensure that no
-    for line in intputFile:
-        countedroads += 1
-        road = re.sub(r'[^0-9\s]', '', line).split()
-        constructroads.append(Road(int(road[0]), int(road[1]), int(road[2]))) #Should make new road from 0 to 1 with transport of 2
+    for line in src:
+        road = line.split()
+        add_edge(mat, int(road[0]), int(road[1]),int(road[2]))
 
-    return expectedstages, expectedroads, countedroads, constructroads
+    return mat
+
+
+def bfs(adj):
+    V = len(adj)
+    res = []
+    s = 0
+    from collections import deque
+    q = deque()
+    visited = [False] * V
+    visited[s] = True
+    q.append(s)
+
+    while q:
+
+        curr = q.popleft()
+        res.append(curr)
+
+        for x in adj[curr]:
+            if not visited[x]:
+                visited[x] = True
+                q.append(x)
+
+    return res
+
 
 
 if __name__ == '__main__':
-    stages, neededRoads, roadCount, roads = constructRoadGraph("testset1.txt")
-    print("Stages: %s, Needed roads: %s, Actual Roads: %s" % (stages, neededRoads, roadCount))
-    for road in roads:
-        print(road)
+    testFiles = ["testset1.txt"]
+
+    #Constructs adjacency matrix without weights, values inside are the type of transport
+    roadMatrix = constructRoadMatrix(testFiles[0])
+    display_matrix(roadMatrix)
+
 
