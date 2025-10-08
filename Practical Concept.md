@@ -1,0 +1,56 @@
+
+- Vierdaagse feesten
+- Multiple stages for the parties
+- Roads connect stages to bus station, train station and such
+- Problem
+	- Some roads need to be dedicated to the party
+	- Minimal number of roads to be closed needs to be found
+	- Each road only has so much capacity
+	- Different connections in graph, visualizing bus, pedestrian or both
+	- Road can only allow bus, only pedestrian, or both on it
+- Solution attempt
+	- Map converts to graph
+	- Probably flow algorithm on the graph, removing capacity done by busses from the pedestrian capacity. Then find capacity of roads in between nodes, finding the maximum flow where the amount of edges is lowest
+	- Perhaps start with finding roads who's capacity together comes closest to the required flow, going over it a bit if an exact match isn't possible
+	- Max flow algorithm modified to prefer the lowest amount of edges
+- Need
+	- Road capacity
+		- Capacity of busses vs pedestrian
+	- Find out if bus or walking is more efficient
+		- Also see if one of the two is preferred or could perhaps be ignored, as ignoring the difference between the two or just one of the two would massively reduce complexity for us, given that this doesn't increase complexity of algorithm
+	- Total number of visitors -> minimal flow rate
+	- Do visitors need the shortest path?
+	- Which roads are easier or less impactful to close so to speak, as closing two less impactful roads could be better than closing one very important road
+
+
+- Actual algorithm steps
+	- Setup
+		- Convert input into graph
+		- Keep count as to how many vertices we are adding, we'll need this later so might as well count it now
+		- On input replace roads that allow both with 2 roads, one for pedestrian and one for bus
+	- Find minimum spanning tree of the matrix, using this as our matrix from then on
+		- Min span tree will remove all cycles, and cycles are just roads we don't really need to use
+		- Perhaps make spanning tree separate on bus/pedestrian, meaning that there is only a cycle if it is fully reachable with either bus or foot and not when it uses a combination of the two to cycle
+			- Could be done by combining the two trees into one or modifying the tree maker into doing something like this
+	- Calculate sum of all weights in the tree, only counting bus edges
+		- Check if we need to do parts times 2, given that some if not all edges will need to be traversed twice to go along all vertices
+		- Also check what happens if a stage can't be reached by bus, logic would dictate we walk instead and just use that weight but wouldn't be the first time logic fails us...
+	- Checking if all can be reached with either bus or foot
+		- Done by BFS on tree, once for foot and bus each
+			- Can't shortcut given how a stage might be reachable in two different ways depending on transport
+		- If BFS discovers less nodes than we know are in the graph, they are clearly not all reachable by given transport so we return -1
+	- Return the calculated bus cost from step 3
+- Possible optimization
+	- Somehow checking if all vertices have at least one edge during building of graph could save a lot of time for the occasions that there is a lone stage somewhere, which would automatically trigger the -1 clause
+	- See if we can construct both spanning trees at the same time, which would literally cut the time needed for this in half. First try could be adding a flag of sorts to every vertex on how it was discovered, but not sure if this will really work
+	- Perhaps we could combine the calculation for bus weight with the check if all can be reached by bus, as in both cases we're traversing all bus edges
+- Correctness
+	- Prove that giving minimum spanning tree gives minimal number of roads needed 
+	- Prove that if BFS can't find all nodes we know there to be it means that not all nodes can be reached by given transport
+	- Prove that adding weights together gives the total cost of traveling the stages, with this being the minimum as our minimum spanning tree already gives the minimum cost for each stage
+- Time complexity
+	- Should be something along the lines of (setup + tree maker + transport checker + (possibly)transport counter)
+- Fun challenges for when we're ...
+	- Try keeping number of transport options generic, allowing for cars, trains and planes to be added as well for example
+	- Calculate minimum cost given we use both foot and bus
+	- Assign actual weights to each road and take these along in the calculations, making bus roads be more preferred to walking for example
