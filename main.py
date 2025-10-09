@@ -1,9 +1,10 @@
 ﻿import re
 
 
+# 0: no route, 1:foot, 2:bus, 3:both
 def add_edge(matrix, i, j, transweight):
-    matrix[i][j] = transweight
-    matrix[j][i] = transweight
+    matrix[i][j] = transweight+1
+    matrix[j][i] = transweight+1
 
 
 def display_matrix(matrix):
