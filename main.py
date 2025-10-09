@@ -1,8 +1,4 @@
-﻿import re
-from sys import maxsize
-
-
-# 0: no route, 0:foot, 1:bus, 2:both
+﻿# 0: no route, 0:foot, 1:bus, 2:both
 def add_edge_to_list(adj, i, j, transport):
     adj[i].append([j,transport])
     adj[j].append([i,transport])
@@ -164,12 +160,21 @@ def PrimMST(adjList):
                 parent[v] = u
                 minHeap.decreaseKey(v, key[v])
 
-    printArr(parent, vertexCount)
+    return parent, vertexCount
 
-def printArr(parent, n):
+def printMST(parent, n):
     for i in range(1, n):
         print("%d - %d" % (parent[i], i))
 
+def filterRoads(adj_list, road_type):
+    filteredList = []
+    for node in adj_list:
+        filteredNode = []
+        for edge in node:
+            if edge[1] == road_type or edge[1] == 2:
+                filteredNode.append(edge[0])
+        filteredList.append(filteredNode)
+    return filteredList
 
 if __name__ == '__main__':
     testFiles = ["testset1.txt"]
@@ -178,33 +183,32 @@ if __name__ == '__main__':
     road_adj_list = constructRoadList(testFiles[0])
     display_adj_list(road_adj_list)
 
-    # 0:foot, 1: bus
+    # 0:foot, 1: bus, 2:both
     foot_ans = stage_bfs(road_adj_list,0)
     bus_ans = stage_bfs(road_adj_list,1)
+    print("=== Walk Graph BFS ===")
     print(foot_ans)
-    print(len(foot_ans))
-    print(len(bus_ans))
-
-
-
-
-    mockAdjList = [
-        [1, 2], # 0
-        [0, 3, 4], # 1
-        [0, 4], # 2
-        [1], # 3
-        [1, 2] # 4
-    ]
+    print("=== Bus Graph BFS ===")
+    print(bus_ans)
 
     mockAdjListActual = [
-        [[1, 2],[4, 2]], # 0
-        [[0, 2],[4, 2]], # 1
-        [[3, 2],[4, 2]], # 2
-        [[1, 2],[4, 2]], # 3
-        [[2, 2],[1, 2]] # 4
+        [[1, 2],[3, 2]], # 0
+        [[0, 2],[2, 2]], # 1
+        [[1, 2],[3, 2]], # 2
+        [[0, 2],[2, 2],[4, 2]], # 3
+        [[3, 2]] # 4
     ]
 
-    PrimMST(mockAdjList)
+    walkGraph = filterRoads(mockAdjListActual, 0)
+    busGraph = filterRoads(mockAdjListActual, 1)
 
-    print(mockAdjList)
-    print(road_adj_list)
+    print("=== Converted Walk Graph ===")
+    print(walkGraph)
+    print("=== Converted Bus Graph ===")
+    print(busGraph)
+    print("=== Walk Graph MST ===")
+    walkMSTParents, walkMSTVertexCount = PrimMST(walkGraph)
+    printMST(walkMSTParents, walkMSTVertexCount)
+    print("=== Bus Graph MST ===")
+    busMSTParents, busMSTVertexCount = PrimMST(busGraph)
+    printMST(busMSTParents, busMSTVertexCount)
