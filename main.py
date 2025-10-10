@@ -1,4 +1,6 @@
-﻿# 0: no route, 0:foot, 1:bus, 2:both
+﻿from heapq import heappush, heappop
+
+# 0: no route, 0:foot, 1:bus, 2:both
 def add_edge_to_list(adj, i, j, transport):
     adj[i].append([j,transport])
     adj[j].append([i,transport])
@@ -176,20 +178,38 @@ def filterRoads(adj_list, road_type):
         filteredList.append(filteredNode)
     return filteredList
 
+
+def primMST_with_type(adj_list, ignored_type):
+    vertex_count = len(adj_list)
+    visited = [False] * vertex_count
+    mst_adj_list = [[] for _ in range(vertex_count)]
+
+    heap = [(0, -1, 0, None)]
+
+    while heap:
+        weight, parent, u, edge_type = heappop(heap)
+        if visited[u]:
+            continue
+        visited[u] = True
+
+        if parent != -1:
+            mst_adj_list[parent].append([u, edge_type])
+            mst_adj_list[u].append([parent, edge_type])
+
+        for neighbor_entry in adj_list[u]:
+            v, link_type = neighbor_entry
+            if not visited[v] and link_type != ignored_type:
+                heappush(heap, (1, u, v, link_type))
+
+    return mst_adj_list
+
+
 if __name__ == '__main__':
     testFiles = ["testset1.txt"]
 
     #Construct modified adjacency list, with i: [j,transport]
     road_adj_list = constructRoadList(testFiles[0])
     display_adj_list(road_adj_list)
-
-    # 0:foot, 1: bus, 2:both
-    foot_ans = stage_bfs(road_adj_list,0)
-    bus_ans = stage_bfs(road_adj_list,1)
-    print("=== Walk Graph BFS ===")
-    print(foot_ans)
-    print("=== Bus Graph BFS ===")
-    print(bus_ans)
 
     mockAdjListActual = [
         [[1, 2],[3, 2]], # 0
@@ -202,13 +222,29 @@ if __name__ == '__main__':
     walkGraph = filterRoads(mockAdjListActual, 0)
     busGraph = filterRoads(mockAdjListActual, 1)
 
-    print("=== Converted Walk Graph ===")
-    print(walkGraph)
-    print("=== Converted Bus Graph ===")
-    print(busGraph)
-    print("=== Walk Graph MST ===")
+    # print("=== Converted Walk Graph ===")
+    # print(walkGraph)
+    # print("=== Converted Bus Graph ===")
+    # print(busGraph)
+    # print("=== Walk Graph MST ===")
     walkMSTParents, walkMSTVertexCount = PrimMST(walkGraph)
-    printMST(walkMSTParents, walkMSTVertexCount)
-    print("=== Bus Graph MST ===")
+    # printMST(walkMSTParents, walkMSTVertexCount)
+    # print("=== Bus Graph MST ===")
     busMSTParents, busMSTVertexCount = PrimMST(busGraph)
-    printMST(busMSTParents, busMSTVertexCount)
+    # printMST(busMSTParents, busMSTVertexCount)
+
+    # Forms MST, ignores the type provided as second argument, returns an adjacency list
+    prim_list_roads = primMST_with_type(road_adj_list,1)
+    print("=== Typed MST for not bus ===")
+    print(prim_list_roads)
+    bfs_list_roads = stage_bfs(prim_list_roads, 1)
+    print("=== BFS for not bus ===")
+    print(bfs_list_roads)
+
+    # 0:foot, 1: bus, 2:both
+    foot_ans = stage_bfs(road_adj_list,0)
+    bus_ans = stage_bfs(road_adj_list,1)
+    # print("=== Walk Graph BFS ===")
+    # print(foot_ans)
+    # print("=== Bus Graph BFS ===")
+    # print(bus_ans)
