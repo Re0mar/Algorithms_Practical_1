@@ -1,21 +1,5 @@
 ﻿from heapq import heappush, heappop
 
-# 0: no route, 0:foot, 1:bus, 2:both
-def add_edge_to_list(adj, i, j, transport):
-    adj[i].append([j,transport])
-    adj[j].append([i,transport])
-
-
-def constructRoadList(src):
-    src = open(src)
-    prod = [[] for _ in range(int(src.readline()[4:].split()[0]))]
-
-    for line in src:
-        road = line.split()
-        add_edge_to_list(prod, int(road[0]), int(road[1]), int(road[2]))
-
-    return prod
-
 def display_adj_list(adj):
     for i in range(len(adj)):
         print(f"{i}: ", end="")
@@ -178,11 +162,28 @@ def filterRoads(adj_list, road_type):
         filteredList.append(filteredNode)
     return filteredList
 
+# 0: no route, 0:foot, 1:bus, 2:both
+def add_edge_to_list(adj, i, j, transport):
+    adj[i].append([j,transport])
+    adj[j].append([i,transport])
+
+
+def constructRoadList(src):
+    src = open(src)
+    prod = [[] for _ in range(int(src.readline()[4:].split()[0]))]
+
+    for line in src:
+        road = line.split()
+        add_edge_to_list(prod, int(road[0]), int(road[1]), int(road[2]))
+
+    return prod
+
 
 def primMST_with_type(adj_list, ignored_type):
     vertex_count = len(adj_list)
     visited = [False] * vertex_count
     mst_adj_list = [[] for _ in range(vertex_count)]
+    unique_vertex_count = 0
 
     heap = [(0, -1, 0, None)]
 
@@ -195,13 +196,14 @@ def primMST_with_type(adj_list, ignored_type):
         if parent != -1:
             mst_adj_list[parent].append([u, edge_type])
             mst_adj_list[u].append([parent, edge_type])
+            unique_vertex_count += 1
 
         for neighbor_entry in adj_list[u]:
             v, link_type = neighbor_entry
             if not visited[v] and link_type != ignored_type:
                 heappush(heap, (1, u, v, link_type))
 
-    return mst_adj_list
+    return mst_adj_list, unique_vertex_count
 
 
 if __name__ == '__main__':
@@ -234,12 +236,14 @@ if __name__ == '__main__':
     # printMST(busMSTParents, busMSTVertexCount)
 
     # Forms MST, ignores the type provided as second argument, returns an adjacency list
-    prim_list_roads = primMST_with_type(road_adj_list,1)
+    prim_list_roads_foot, unique_foot_stages = primMST_with_type(road_adj_list,1)
+    prim_list_roads_bus, unique_bus_stages = primMST_with_type(road_adj_list,1)
     print("=== Typed MST for not bus ===")
-    print(prim_list_roads)
-    bfs_list_roads = stage_bfs(prim_list_roads, 1)
+    print(prim_list_roads_foot)
+    bfs_list_roads = stage_bfs(prim_list_roads_foot, 1)
     print("=== BFS for not bus ===")
     print(bfs_list_roads)
+    print("Total Stages: %s, Foot Stages: %s, Bus Stages: %s" % (len(road_adj_list) ,unique_bus_stages, unique_foot_stages))
 
     # 0:foot, 1: bus, 2:both
     foot_ans = stage_bfs(road_adj_list,0)
