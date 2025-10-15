@@ -170,13 +170,15 @@ def add_edge_to_list(adj, i, j, transport):
 
 def constructRoadList(src):
     src = open(src)
+    edge_count = 0
     prod = [[] for _ in range(int(src.readline()[4:].split()[0]))]
 
     for line in src:
         road = line.split()
         add_edge_to_list(prod, int(road[0]), int(road[1]), int(road[2]))
+        edge_count += 1
 
-    return prod
+    return prod, edge_count
 
 
 def primMST_with_type(adj_list, ignored_type):
@@ -210,7 +212,7 @@ if __name__ == '__main__':
     testFiles = ["testset1.txt"]
 
     #Construct modified adjacency list, with i: [j,transport]
-    road_adj_list = constructRoadList(testFiles[0])
+    road_adj_list, road_count = constructRoadList(testFiles[0])
     display_adj_list(road_adj_list)
 
     mockAdjListActual = [
