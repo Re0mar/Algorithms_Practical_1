@@ -7,43 +7,6 @@ def display_adj_list(adj):
             print(j[0], end=" ")
         print()
 
-
-def stage_bfs(adj, transport):
-    # create an array to store the traversal
-    res = []
-    s = 0
-    # Create a queue for BFS
-    from collections import deque
-    q = deque()
-
-    # Initially mark all the vertices as not visited
-    visited = [False] * len(adj)
-
-    # Mark source node as visited and enqueue it
-    visited[s] = True
-    q.append(s)
-
-    if transport == 0:
-        while q:
-            curr = q.popleft()
-            res.append(curr)
-            for x in adj[curr]:
-                if not visited[x[0]] and x[1] != 1:
-                    # print(x, end="")
-                    visited[x[0]] = True
-                    q.append(x[0])
-    elif transport == 1:
-        while q:
-            curr = q.popleft()
-            res.append(curr)
-            for x in adj[curr]:
-                # print(x, end="")
-                if not visited[x[0]] and x[1] != 0:
-                    visited[x[0]] = True
-                    q.append(x[0])
-    return res
-
-
 class Heap():
 
     def __init__(self):
@@ -121,46 +84,6 @@ class Heap():
         return False
 
 
-def PrimMST(adjList):
-    vertexCount = len(adjList)
-    key = [float('inf')] * vertexCount
-    parent = [-1] * vertexCount
-    minHeap = Heap()
-
-    for v in range(vertexCount):
-        minHeap.array.append(minHeap.createMinHeapNode(v, key[v]))
-        minHeap.pos.append(v)
-
-    minHeap.pos[0] = 0
-    key[0] = 0
-    minHeap.decreaseKey(0, key[0])
-    minHeap.size = vertexCount
-
-    while not minHeap.isEmpty():
-        newHeapNode = minHeap.extractMin()
-        u = newHeapNode[0]
-
-        for v in adjList[u]:
-            if minHeap.isInMinHeap(v) and 1 < key[v]:
-                key[v] = 1
-                parent[v] = u
-                minHeap.decreaseKey(v, key[v])
-
-    return parent, vertexCount
-
-def printMST(parent, n):
-    for i in range(1, n):
-        print("%d - %d" % (parent[i], i))
-
-def filterRoads(adj_list, road_type):
-    filteredList = []
-    for node in adj_list:
-        filteredNode = []
-        for edge in node:
-            if edge[1] == road_type or edge[1] == 2:
-                filteredNode.append(edge[0])
-        filteredList.append(filteredNode)
-    return filteredList
 
 # 0: no route, 0:foot, 1:bus, 2:both
 def add_edge_to_list(adj, i, j, transport):
@@ -171,14 +94,15 @@ def add_edge_to_list(adj, i, j, transport):
 def constructRoadList(src):
     src = open(src)
     edge_count = 0
-    prod = [[] for _ in range(int(src.readline()[4:].split()[0]))]
+    stages = int(src.readline()[4:].split()[0])
+    prod = [[] for _ in range(stages)]
 
     for line in src:
         road = line.split()
         add_edge_to_list(prod, int(road[0]), int(road[1]), int(road[2]))
         edge_count += 1
 
-    return prod, edge_count
+    return prod, edge_count, stages
 
 
 def primMST_with_type(adj_list, ignored_type):
@@ -186,6 +110,7 @@ def primMST_with_type(adj_list, ignored_type):
     visited = [False] * vertex_count
     mst_adj_list = [[] for _ in range(vertex_count)]
     unique_vertex_count = 0
+    unique_road_count = 0
 
     heap = [(0, -1, 0, None)]
 
@@ -199,58 +124,36 @@ def primMST_with_type(adj_list, ignored_type):
             mst_adj_list[parent].append([u, edge_type])
             mst_adj_list[u].append([parent, edge_type])
             unique_vertex_count += 1
+            unique_road_count += 1
 
         for neighbor_entry in adj_list[u]:
             v, link_type = neighbor_entry
             if not visited[v] and link_type != ignored_type:
                 heappush(heap, (1, u, v, link_type))
 
-    return mst_adj_list, unique_vertex_count
+    return mst_adj_list, unique_vertex_count, unique_road_count
 
 
 if __name__ == '__main__':
     testFiles = ["testset1.txt"]
 
     #Construct modified adjacency list, with i: [j,transport]
-    road_adj_list, road_count = constructRoadList(testFiles[0])
+    road_adj_list, road_count, stage_count = constructRoadList(testFiles[0])
     display_adj_list(road_adj_list)
 
-    mockAdjListActual = [
-        [[1, 2],[3, 2]], # 0
-        [[0, 2],[2, 2]], # 1
-        [[1, 2],[3, 2]], # 2
-        [[0, 2],[2, 2],[4, 2]], # 3
-        [[3, 2]] # 4
-    ]
-
-    walkGraph = filterRoads(mockAdjListActual, 0)
-    busGraph = filterRoads(mockAdjListActual, 1)
-
-    # print("=== Converted Walk Graph ===")
-    # print(walkGraph)
-    # print("=== Converted Bus Graph ===")
-    # print(busGraph)
-    # print("=== Walk Graph MST ===")
-    walkMSTParents, walkMSTVertexCount = PrimMST(walkGraph)
-    # printMST(walkMSTParents, walkMSTVertexCount)
-    # print("=== Bus Graph MST ===")
-    busMSTParents, busMSTVertexCount = PrimMST(busGraph)
-    # printMST(busMSTParents, busMSTVertexCount)
-
     # Forms MST, ignores the type provided as second argument, returns an adjacency list
-    prim_list_roads_foot, unique_foot_stages = primMST_with_type(road_adj_list,1)
-    prim_list_roads_bus, unique_bus_stages = primMST_with_type(road_adj_list,1)
-    print("=== Typed MST for not bus ===")
-    print(prim_list_roads_foot)
-    bfs_list_roads = stage_bfs(prim_list_roads_foot, 1)
-    print("=== BFS for not bus ===")
-    print(bfs_list_roads)
-    print("Total Stages: %s, Foot Stages: %s, Bus Stages: %s" % (len(road_adj_list) ,unique_bus_stages, unique_foot_stages))
+    prim_list_roads_foot, unique_foot_stages, unique_foot_roads = primMST_with_type(road_adj_list,1)
+    prim_list_roads_bus, unique_bus_stages, unique_bus_roads= primMST_with_type(road_adj_list,1)
 
-    # 0:foot, 1: bus, 2:both
-    foot_ans = stage_bfs(road_adj_list,0)
-    bus_ans = stage_bfs(road_adj_list,1)
-    # print("=== Walk Graph BFS ===")
-    # print(foot_ans)
-    # print("=== Bus Graph BFS ===")
-    # print(bus_ans)
+    print(stage_count)
+    print(unique_foot_stages)
+    print(unique_bus_stages)
+
+    print(road_count)
+    print(unique_foot_roads)
+    print(unique_bus_roads)
+
+    if stage_count == unique_foot_stages and stage_count == unique_bus_stages:
+        print(road_count-unique_foot_roads-unique_bus_roads)
+    else:
+        print(-1)
