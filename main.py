@@ -94,7 +94,7 @@ def add_edge_to_list(adj, i, j, transport):
 def constructRoadList(src):
     src = open(src)
     edge_count = 0
-    stages = int(src.readline()[4:].split()[0])
+    stages = int(src.readline().split()[0])
     prod = [[] for _ in range(stages)]
 
     for line in src:
@@ -105,55 +105,64 @@ def constructRoadList(src):
     return prod, edge_count, stages
 
 
-def primMST_with_type(adj_list, ignored_type):
+def primMST_with_type(adj_list, ignored_types):
     vertex_count = len(adj_list)
-    visited = [False] * vertex_count
-    mst_adj_list = [[] for _ in range(vertex_count)]
+    global_mst_adj = [[] for _ in range(vertex_count)]
+    global_visited = [False] * vertex_count
+    global_edges = set()
+
     unique_vertex_count = 0
     unique_road_count = 0
 
-    heap = [(0, -1, 0, None)]
+    for ignored_types in ignored_types:
+        visited = [False] * vertex_count
+        heap = [(0, -1, 0, None)]
 
-    while heap:
-        weight, parent, u, edge_type = heappop(heap)
-        if visited[u]:
-            continue
-        visited[u] = True
+        while heap:
+            weight, parent, u, edge_type = heappop(heap)
+            if visited[u]:
+                continue
+            visited[u] = True
 
-        if parent != -1:
-            mst_adj_list[parent].append([u, edge_type])
-            mst_adj_list[u].append([parent, edge_type])
-            unique_vertex_count += 1
-            unique_road_count += 1
+            if not global_visited[u]:
+                global_visited[u] = True
+                unique_vertex_count += 1
 
-        for neighbor_entry in adj_list[u]:
-            v, link_type = neighbor_entry
-            if not visited[v] and link_type != ignored_type:
-                heappush(heap, (1, u, v, link_type))
+            if parent != -1:
+                edge_key = tuple(sorted((parent, u)))
+                if edge_key not in global_edges:
+                    global_edges.add(edge_key)
+                    unique_road_count += 1
 
-    return mst_adj_list, unique_vertex_count, unique_road_count
+                    global_mst_adj[parent].append([u, edge_type])
+                    global_mst_adj[u].append([parent, edge_type])
+
+            for v, link_type in adj_list[u]:
+                if not visited[v] and link_type not in ignored_types:
+                    heappush(heap, (1, u, v, link_type))
+
+    return global_mst_adj, unique_vertex_count, unique_road_count
 
 
 if __name__ == '__main__':
-    testFiles = ["testset1.txt"]
+    testFiles = []
 
-    #Construct modified adjacency list, with i: [j,transport]
-    road_adj_list, road_count, stage_count = constructRoadList(testFiles[0])
-    display_adj_list(road_adj_list)
+    for file in range(1,41):
+        testFiles.append("samples/"+str(file) + ".in")
 
-    # Forms MST, ignores the type provided as second argument, returns an adjacency list
-    prim_list_roads_foot, unique_foot_stages, unique_foot_roads = primMST_with_type(road_adj_list,1)
-    prim_list_roads_bus, unique_bus_stages, unique_bus_roads= primMST_with_type(road_adj_list,1)
+    for testFile in testFiles:
+        #Construct modified adjacency list, with i: [j,transport]
+        road_adj_list, road_count, stage_count = constructRoadList(testFile)
+        # display_adj_list(road_adj_list)
 
-    print(stage_count)
-    print(unique_foot_stages)
-    print(unique_bus_stages)
+        # Forms MST, ignores the type provided as second argument, returns an adjacency list
+        prim_list_roads, unique_stages, unique_roads = primMST_with_type(road_adj_list,[[0],[1]])
 
-    print(road_count)
-    print(unique_foot_roads)
-    print(unique_bus_roads)
+        result = -1
 
-    if stage_count == unique_foot_stages and stage_count == unique_bus_stages:
-        print(road_count-unique_foot_roads-unique_bus_roads)
-    else:
-        print(-1)
+        if stage_count == unique_stages:
+            result = road_count - unique_roads
+
+        print("Test for "+testFile+", Act_Stage: "+str(unique_stages)+
+              ", Exp_Stage"+str(stage_count)+", Form_Roads: "+str(road_count)+
+              ", Roads_Left: "+str(unique_roads)+", Roads_Removed: "+str(result))
