@@ -35,7 +35,7 @@ def optRoadRemovalForFile(road_file):
     single_roads = []
     for line in src:
         road = line.split()
-        if road[2] == 2:
+        if road[2] == '2': #Hate this but feel like char compare is cheaper than casting to integer each time before compare...
             twin_roads.append([int(road[0]), int(road[1]), int(road[2])])
         else:
             single_roads.append([int(road[0]), int(road[1]), int(road[2])])
@@ -62,7 +62,7 @@ def optRoadRemovalForFile(road_file):
         return -1
 
     # Returning total roads - roads used to get the amount we can remove
-    return len(roads) - used_road_count
+    return len(twin_roads)+len(single_roads) - used_road_count
 
 
 if __name__ == '__main__':
