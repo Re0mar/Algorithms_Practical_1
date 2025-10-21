@@ -1,14 +1,16 @@
-﻿
-class DisjointSet:
+﻿class DisjointSet:
     def __init__(self, n):
         self.parent = list(range(n + 1))
         self.components = n
 
+    # Finding something in our disjoint set, only used by union but who cares
     def find(self, x):
         if self.parent[x] != x:
             self.parent[x] = self.find(self.parent[x])
         return self.parent[x]
 
+    # Checking if we can unionize something in the set, done with a True if we can and not done otherwise, reducing our count as we go
+    # Forms backbone of algorithm cause if we can unionize something out of the total set of roads we removed a road, bringing us closer to the total
     def union(self, x, y):
         x_root = self.find(x)
         y_root = self.find(y)
@@ -19,29 +21,8 @@ class DisjointSet:
         return True
 
 
-# def optRoadRemoval(n, roads):
-#     disjoint_foot = DisjointSet(n)
-#     disjoint_bus = DisjointSet(n)
-#     used_road_count = 0
-#
-#     for road in roads:
-#         u, v, road_type = road
-#         if road_type == 3:
-#             if disjoint_foot.union(u, v) | disjoint_bus.union(u, v):
-#                 used_road_count += 1
-#         if road_type == 1:
-#             if disjoint_foot.union(u, v):
-#                 used_road_count += 1
-#         if road_type == 2:
-#             if disjoint_bus.union(u, v):
-#                 used_road_count += 1
-#
-#     if disjoint_foot.components != 1 or disjoint_bus.components != 1:
-#         return -1
-#
-#     return len(roads) - used_road_count
-
 def optRoadRemovalForFile(road_file):
+    # Opening file
     src = open(road_file)
     stages = int(src.readline().split()[0])
 
@@ -49,17 +30,26 @@ def optRoadRemovalForFile(road_file):
     disjoint_bus = DisjointSet(stages)
     used_road_count = 0
 
-    roads = []
+    # Forming the lists of roads
+    twin_roads = []
+    single_roads = []
     for line in src:
         road = line.split()
-        roads.append([int(road[0]), int(road[1]), int(road[2])])
+        if road[2] == 2:
+            twin_roads.append([int(road[0]), int(road[1]), int(road[2])])
+        else:
+            single_roads.append([int(road[0]), int(road[1]), int(road[2])])
 
-    for road in roads:
+    # Using as many double usable roads as possible for efficiency
+    # Basically going over every double use road and checking it, forming a sort of base grid that both parties then branch off further from
+    for road in twin_roads:
         if road[2] == 2: # Usable by both feet and wheel
             if disjoint_foot.union(road[0], road[1]) | disjoint_bus.union(road[0], road[1]):
                 used_road_count += 1
 
-    for road in roads:
+    # Checking the individual roads we need to add
+    # Basically going from the base grid we just made to all yet unreached stages, adding roads as we do
+    for road in single_roads:
         if road[2] == 0: # Usable by feet
             if disjoint_foot.union(road[0], road[1]):
                 used_road_count += 1
@@ -67,9 +57,11 @@ def optRoadRemovalForFile(road_file):
             if disjoint_bus.union(road[0], road[1]):
                 used_road_count += 1
 
+    # Checking if both sets are still 'complete' and thus valid
     if disjoint_foot.components != 1 or disjoint_bus.components != 1:
         return -1
 
+    # Returning total roads - roads used to get the amount we can remove
     return len(roads) - used_road_count
 
 
