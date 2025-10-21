@@ -127,7 +127,7 @@ $O(\text{Road Types}\cdot \text{Roads})$ down to just $O(\text{Roads}), which is
 - Disjoint set wasn't mentioned as much in lectures compared to other data structs, so it took a while to come up with this one and how it could be used here 
 - The lack of weights made this practical easier although solving that could possibly be done by ordering the road lists in increasing order, 
 which would've made it work pretty alright, although learning when the combined weight of typed roads is lesser than that of the generic one could've posed a challenge
-- 
+- The program fails very hard when no newlines are present between the roads in the input file, could be fixed but isn't like how assignment does it so we go complain here instead...
 
 
 

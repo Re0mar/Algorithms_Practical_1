@@ -23,7 +23,7 @@
 
 def optRoadRemovalForFile(road_file):
     # Opening file
-    src = open(road_file)
+    src = open(road_file) #TODO: Should try to read whole file as one, split on space and newline, ignore [0],[1], loop on i <= (len-2)/3, then take i, i+1, i+2 for the input road things
     stages = int(src.readline().split()[0])
 
     disjoint_foot = DisjointSet(stages)
@@ -66,10 +66,11 @@ def optRoadRemovalForFile(road_file):
 
 
 if __name__ == '__main__':
-    testFiles = []
-    for file in range(1,41):
-        testFiles.append(["samples/"+str(file) + ".in", int(open("samples/"+str(file)+ ".ans").readline().split()[0])])
-
-    for file in testFiles:
-        output = optRoadRemovalForFile(file[0])
-        print(file[0] + ", Output: " +str(output) + ", Expected: " +str(file[1])+ ", Succeeded: " + str(output==file[1]))
+    # testFiles = []
+    # for file in range(1,41):
+    #     testFiles.append(["samples/"+str(file) + ".in", int(open("samples/"+str(file)+ ".ans").readline().split()[0])])
+    #
+    # for file in testFiles:
+    #     output = optRoadRemovalForFile(file[0])
+    #     print(file[0] + ", Output: " +str(output) + ", Expected: " +str(file[1])+ ", Succeeded: " + str(output==file[1]))
+    print(open("samples/1.in").read())
