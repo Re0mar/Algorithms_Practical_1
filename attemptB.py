@@ -24,7 +24,8 @@
 def optRoadRemovalForFile(road_file):
     # Opening file
     src = open(road_file) #TODO: Should try to read whole file as one, split on space and newline, ignore [0],[1], loop on i <= (len-2)/3, then take i, i+1, i+2 for the input road things
-    stages = int(src.readline().split()[0])
+    split = open(road_file, 'r').read().split()
+    stages = int(split[0])
 
     disjoint_foot = DisjointSet(stages)
     disjoint_bus = DisjointSet(stages)
@@ -33,12 +34,15 @@ def optRoadRemovalForFile(road_file):
     # Forming the lists of roads
     twin_roads = []
     single_roads = []
-    for line in src:
-        road = line.split()
-        if road[2] == '2': #Hate this but feel like char compare is cheaper than casting to integer each time before compare...
-            twin_roads.append([int(road[0]), int(road[1]), int(road[2])])
+
+    # Assuming file has n + x numbers in it, with n=2 and x / 3 = number of roads
+    for i in range(0,int((len(split)-2)/3)):
+        loc = 2 + i*3
+
+        if split[loc+2] == '2': #Hate this but feel like char compare is cheaper than casting to integer each time before compare...
+            twin_roads.append([int(split[loc]), int(split[loc+1]), int(split[loc+2])])
         else:
-            single_roads.append([int(road[0]), int(road[1]), int(road[2])])
+            single_roads.append([int(split[loc]), int(split[loc+1]), int(split[loc+2])])
 
     # Using as many double usable roads as possible for efficiency
     # Basically going over every double use road and checking it, forming a sort of base grid that both parties then branch off further from
@@ -66,11 +70,10 @@ def optRoadRemovalForFile(road_file):
 
 
 if __name__ == '__main__':
-    # testFiles = []
-    # for file in range(1,41):
-    #     testFiles.append(["samples/"+str(file) + ".in", int(open("samples/"+str(file)+ ".ans").readline().split()[0])])
-    #
-    # for file in testFiles:
-    #     output = optRoadRemovalForFile(file[0])
-    #     print(file[0] + ", Output: " +str(output) + ", Expected: " +str(file[1])+ ", Succeeded: " + str(output==file[1]))
-    print(open("samples/1.in").read())
+    testFiles = []
+    for file in range(1,41):
+        testFiles.append(["samples/"+str(file) + ".in", int(open("samples/"+str(file)+ ".ans").readline().split()[0])])
+
+    for file in testFiles:
+        output = optRoadRemovalForFile(file[0])
+        print(file[0] + ", Output: " +str(output) + ", Expected: " +str(file[1])+ ", Succeeded: " + str(output==file[1]))
