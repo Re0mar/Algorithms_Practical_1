@@ -23,8 +23,6 @@ By:
 ### 1. Algorithm Explanation
 
 ##### 1.1 Initialization
-- Looping through the file to build up a list of roads
-- Road is {Starting point, End point, Type}
 
 During the initialization fase the algorithm takes the given input file and loops through its lines, keeping the first line separate as it's a bit special.
 The only thing of use that this line contains is the total amount of stages after all, while the total number of roads between them is instead retrieved in the next part.
@@ -35,11 +33,6 @@ During the remaining execution of the algorithm the acquired count of roads is u
 while this can't always be said for the given number.
 
 ##### 1.2 Algorithm Logic
-
-- Algorithm forms two disjoint sets, one for foot and one for bus, both containing all stages
-- After this we loop through all roads depending on their type
-  - For each iteration we add the road to the disjoint sets of those that can use it
-  - In the set the total amount of 
 
 During the execution state of the algorithm the usage of the disjoint set data structure is employed, where one is used for each user of the road network, leaving one for buses and one for pedestrians.
 These sets each contain the total amount of stages present in the input file and are each used to figure out which stages weren't already reached if so to speak, where the lack of weight or a requirement for the shortest path ensures that once a path is found it is correct.
@@ -66,10 +59,6 @@ as this signals that not all stages are reachable anymore.
 In the event that this happens the algorithm instead returns a minus one to signal this failure.
 
 ##### 1.4 Optimizations
-- During initialization we keep 2 lists, one for each kind of loop
-  - Ensures that type 2 loop doesn't touch type 0 or 1 and inverse
-  - Reduces runtime from O(2*roads) to O(roads)
-- Checking double roads first optimises efficiency but is needed anyway for correctness
 
 While the cornerstone of this algorithm relies on keeping a number of disjoint sets equal to the types of road users,
 a process that is by design already pretty optimized due to how relatively simple this data structure makes it to check if using a road has a benefit,
@@ -124,11 +113,29 @@ $O(\text{Road Types}\cdot \text{Roads})$ down to just $O(\text{Roads}), which is
 ---
 
 ### 4. Reflection
-- Disjoint set wasn't mentioned as much in lectures compared to other data structs, so it took a while to come up with this one and how it could be used here 
-- The lack of weights made this practical easier although solving that could possibly be done by ordering the road lists in increasing order, 
-which would've made it work pretty alright, although learning when the combined weight of typed roads is lesser than that of the generic one could've posed a challenge
-- Submitting to DomJudge was pretty hard/irritating as no clear guide as to what or how it calls is easily found,
-requiring multiple attempts at submitting just to figure out how it tests the code...
 
+During the design, implementation and testing of this algorithm our group ran into a couple of challenges,
+first of which was the requirement of a disjoint set data structure in our final solution and the relatively little attention this structure received during the lectures.
+Since most of the attention during these went to versions of BFS, DFS and Dijkstra our first attempt thus also tried it with these algorithms as a basis or inspiration.
+This attempt thus focused on a modified BFS that made a pair of min span trees, based on the theory that these would have the minimal amount of edges to connect al the vertices,
+thus making their total edge count equal to the minimal amount of roads we would need.
+Since both min span trees could contain the same road there was a problem with this attempt however, since it would count these twice and thus arrive at an incorrect count.
 
----
+During our attempt to fix this we eventually stumbled upon the disjoint set structure, 
+which after some contemplation proved to be perfect for checking if using a road would be beneficial for the graph or not.
+This, combined with optimisations to the algorithm that uses the disjoint set, became our final solution, which is explained in chapter 1.
+
+Another challenge we faced came in the form of getting the inputs right, 
+as both our local testing solution and the DomJudge environment proved to be difficult when testing our attempt.
+The first part of this challenge came from how the `.in` files downloaded from DomJudge for local testing were inconsistent in their usage of `\n` characters,
+requiring a small refactor of the way the algorithm separates the input from a line based solution to one that only looks at the numbers.
+
+The bigger issue came from testing the algorithm on DomJudge itself, 
+as the minimal documentation and feedback given by the environment made it pretty hard to understand what our program was called with and in which way the input was presented,
+thus requiring a small dozen of attempts before the input from DomJudge was correctly interpreted by our algorithm.
+Providing more explanation or documentation as to how DomJudge calls a provided program would thus be our main feedback in regards to this assignment,
+as the amount of resources wasted for figuring this out could've been prevented because of this.
+
+Apart from these issues the remainder of the project was a good mixture between challenging and intriguing,
+as mainly the brainstorming phases about how we could break down, translate and solve the problem from the assignment were some 
+good times that not only moved us towards the solution but provided new insights about unrelated topics as well.
