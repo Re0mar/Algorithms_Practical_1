@@ -88,10 +88,10 @@ $O(\text{Road Types}\cdot \text{Roads})$ down to just $O(\text{Roads}), which is
 ---
 
 ### 2. Correctness Analysis
-The correctness of the algorithm relies on the below proof holding for any reasonable input.
+The correctness of the algorithm relies on the below proof holding for any reasonable input, i.e. the sample sets provided on DomJudge.
 
 #### 2.1 Correctly identifying new stages
-The algorithm represents the network of roads in the graph as a spanning tree, one which by definition is acyclic and contains a single root node. The root node of a tree is shared by any member of that tree. From this it follows that a given node that does not share this same root, is not part of that tree. By assessing the roots of the nodes on both sides of the a new edge, we can determine whether this road connects to a new stage or tree, or is simply a different road to an already reachable stage from the current tree.
+The algorithm represents the network of roads in the graph as a spanning tree, one which by definition is acyclic and contains a single root node. The root node of a tree is shared by any member of that tree. From this it follows that a given node that does not share this same root, is not part of that tree. By assessing the roots of the nodes on both sides of the a new edge, we can determine whether this road connects to a new stage or tree, or is simply a different road to an already reachable stage from the current tree. In the implementation, any disconnected node or group of nodes is represented as a disjoint set.
 #### 2.2 Optimal solution for single modes of transport
 The goal of removing the maximum number of roads is keeping the minimum amount of roads to keep all stages reachable. To connect $n$ nodes in a given undirected graph, would take at least $n-1$ total edges, which is the lower bound of roads kept. Since the graph is unweighted and the lengths of the roads are thus irrelevant, the algorithm iteratively checks whether or not any road connects to a previously unreachable stage or disjoint set of stages for a single mode of transport. If it does, the stage or set of stages is connected to the tree, as connecting that new stage using a single road must be the most optimal solution. 
 
