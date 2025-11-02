@@ -1,4 +1,7 @@
-﻿class DisjointSet:
+﻿import logging
+import sys
+
+class DisjointSet:
     def __init__(self, n):
         self.parent = list(range(n + 1))
         self.components = n
@@ -21,10 +24,8 @@
         return True
 
 
-def optRoadRemovalForFile(road_file):
-    # Opening file
-    src = open(road_file) #TODO: Should try to read whole file as one, split on space and newline, ignore [0],[1], loop on i <= (len-2)/3, then take i, i+1, i+2 for the input road things
-    split = open(road_file, 'r').read().split()
+def optRoadRemovalForFile(road_list):
+    split = road_list.split()
     stages = int(split[0])
 
     disjoint_foot = DisjointSet(stages)
@@ -70,10 +71,5 @@ def optRoadRemovalForFile(road_file):
 
 
 if __name__ == '__main__':
-    testFiles = []
-    for file in range(1,41):
-        testFiles.append(["samples/"+str(file) + ".in", int(open("samples/"+str(file)+ ".ans").readline().split()[0])])
-
-    for file in testFiles:
-        output = optRoadRemovalForFile(file[0])
-        print(file[0] + ", Output: " +str(output) + ", Expected: " +str(file[1])+ ", Succeeded: " + str(output==file[1]))
+    text = sys.stdin.read()
+    print(optRoadRemovalForFile(text))
