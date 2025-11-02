@@ -3,13 +3,13 @@
         self.parent = list(range(n + 1))
         self.components = n
 
-    # Finding something in our disjoint set, only used by union but who cares
+    # Finding something in our disjoint set, only used by union
     def find(self, x):
         if self.parent[x] != x:
             self.parent[x] = self.find(self.parent[x])
         return self.parent[x]
 
-    # Checking if we can unionize something in the set, done with a True if we can and not done otherwise, reducing our count as we go
+    # Checking if we can unionize something in the set, returns True if we can and False otherwise, reducing our count as we go
     # Forms backbone of algorithm cause if we can unionize something out of the total set of roads we removed a road, bringing us closer to the total
     def union(self, x, y):
         x_root = self.find(x)
@@ -23,7 +23,8 @@
 
 def optRoadRemovalForFile(road_file):
     # Opening file
-    src = open(road_file) #TODO: Should try to read whole file as one, split on space and newline, ignore [0],[1], loop on i <= (len-2)/3, then take i, i+1, i+2 for the input road things
+    #TODO: Should try to read whole file as one, split on space and newline, ignore [0],[1], loop on i <= (len-2)/3, then take i, i+1, i+2 for the input road things
+    src = open(road_file) 
     split = open(road_file, 'r').read().split()
     stages = int(split[0])
 
@@ -39,20 +40,20 @@ def optRoadRemovalForFile(road_file):
     for i in range(0,int((len(split)-2)/3)):
         loc = 2 + i*3
 
-        if split[loc+2] == '2': #Hate this but feel like char compare is cheaper than casting to integer each time before compare...
+        if split[loc+2] == '2': # Comparing chars might be cheaper than casting to integer each time before compare
             twin_roads.append([int(split[loc]), int(split[loc+1]), int(split[loc+2])])
         else:
             single_roads.append([int(split[loc]), int(split[loc+1]), int(split[loc+2])])
 
     # Using as many double usable roads as possible for efficiency
-    # Basically going over every double use road and checking it, forming a sort of base grid that both parties then branch off further from
+    # Essentially going over every double use road and checking it, forming a sort of base grid that both parties then branch off of
     for road in twin_roads:
         if road[2] == 2: # Usable by both feet and wheel
             if disjoint_foot.union(road[0], road[1]) | disjoint_bus.union(road[0], road[1]):
                 used_road_count += 1
 
     # Checking the individual roads we need to add
-    # Basically going from the base grid we just made to all yet unreached stages, adding roads as we do
+    # Essentially going from the base grid we just made to all yet unreached stages, adding roads as we do
     for road in single_roads:
         if road[2] == 0: # Usable by feet
             if disjoint_foot.union(road[0], road[1]):
