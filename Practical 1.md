@@ -4,10 +4,10 @@
 
 Algorithms And Data Structures Practical One
 
-Group: 
+Group: 21
 By:
 - Daniël Groenendijk, **s1169129**
-- Dirk
+- Dirk van Roosmalen **s1176271**
 
 ---
 
@@ -88,18 +88,18 @@ $O(\text{Road Types}\cdot \text{Roads})$ down to just $O(\text{Roads}), which is
 ---
 
 ### 2. Correctness Analysis
-- Proof that comparing the roots of two nodes in disjoint set shows whether a new node is found
-  - Since set can be seen as tree of sorts, both roots should eventually come down to the same node
-  - This will only not happen if one of the two nodes isn't in the set already, in which case it'll be its own root
-  - In that case the rootless node will get the rooted one as root, and the total number of nodes is decreased by one
-- Proof that checking each road ensures maximum number is removed
-  - Since the given way from node to node doesn't matter any route can be taken
-  - Since no way is better than the other in terms of weight or length, the first one found is as good as all others
-  - Once a route to a node is found, all other routes to that node are no longer needed and may thus be removed
-  - By first checking what we can achieve with the roads that allow the most types of travelers we ensure that the minimal number of roads is used in the end
-- Proof that subtracting the used roads from the total roads the remainder is the roads that were removed
-  - If this doesn't hold we have a major problem
+#### 2.1 Correctly identifying new stages
+The algorithm represents the network of roads in the graph as a spanning tree, one which by definition is acyclic and contains a single root node. The root node of a tree is shared by any member of that tree. From this it follows that a given node that does not share this same root, is not part of that tree. By assessing the roots of the nodes on both sides of the a new edge, we can determine whether this road connects to a new stage or tree, or is simply a different road to an already reachable stage from the current tree.
+#### 2.2 Optimal solution for single modes of transport
+The goal of removing the maximum number of roads is keeping the minimum amount of roads to keep all stages reachable. To connect $n$ nodes in a given undirected graph, would take at least $n-1$ total edges, which is the lower bound of roads kept. Since the graph is unweighted and the lengths of the roads are thus irrelevant, the algorithm iteratively checks whether or not any road connects to a previously unreachable stage or disjoint set of stages for a single mode of transport. If it does, the stage or set of stages is connected to the tree, as connecting that new stage using a single road must be the most optimal solution. 
 
+Assuming every stage is reachable, the greedy approach of starting from a given node and connecting any new stage or disjoint set of stages will always yield the optimal solution by connecting $n$ stages using $n-1$ roads. 
+#### 2.3 Optimizing for multiple modes of transport
+The problem with assessing single modes of transport at a time is that although producing locally optimal solutions, these don't necessarily hold as a globally optimal solution, as these locally optimal solutions could use completely differing sets of roads. This is because these solutions don't favor roads that offer multiple types of transportation. These types of roads are potentially more efficient than single transport type ones are, as these allow for usage at no additional 'cost' for local solutions if utilized by earlier local solutions. This could lead to a 'more than optimal' local solution below the aforementioned local lower bound. To ensure maximum usage of these types of roads, the algorithm classifies each road and assesses these multi-traffic type roads first, ensuring that they are optimally used.
+#### 2.4 Calculating the number of roads removed
+For each connection (or union) between (a group of) stages, the number of used roads which is initialized at $0$, is increased by $1$. The total amount of roads that could be removed must be $n_{removed} = n_{total} - n_{used}$, where $n_{total} = n_{twinroads} + n_{singleroads}$.
+#### 2.5 Detecting unreachable stages
+In some cases is possible for there to be no solution, as one or more stages could be unreachable via one or either modes of transport. Upon initialization, the algorithm takes note of the total amount of stages it now expects to find. When it is done assessing every road, it checks if the total amount of disjoint sets left for either method of transport is 1. If it isn't, it must mean that one or more (groups of) stages are not connected with, and are thus unreachable from, the first stage.
 
 ---
 
