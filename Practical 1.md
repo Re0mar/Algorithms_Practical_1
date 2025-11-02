@@ -88,6 +88,8 @@ $O(\text{Road Types}\cdot \text{Roads})$ down to just $O(\text{Roads}), which is
 ---
 
 ### 2. Correctness Analysis
+The correctness of the algorithm relies on the below proof holding for any reasonable input.
+
 #### 2.1 Correctly identifying new stages
 The algorithm represents the network of roads in the graph as a spanning tree, one which by definition is acyclic and contains a single root node. The root node of a tree is shared by any member of that tree. From this it follows that a given node that does not share this same root, is not part of that tree. By assessing the roots of the nodes on both sides of the a new edge, we can determine whether this road connects to a new stage or tree, or is simply a different road to an already reachable stage from the current tree.
 #### 2.2 Optimal solution for single modes of transport
@@ -104,11 +106,29 @@ In some cases is possible for there to be no solution, as one or more stages cou
 ---
 
 ### 3. Complexity Analysis
-- Complexity of disjoint list unknown
-- Use 2 disjointsets total in a 2 loops that have a combined runtime of the number of edges
-- Init is runtime of file length
-- Total probably something like $O(roads+roads\cdot(disjointSet\cdot2))$
+The time complexity of the algorithm is the sum of the time complexity of the initialization and the analyzation phases of the algorithm. Note that this assumes a single file as input where $\|V\|$ represents the number of stages and $\|E\|$ the number of roads present.  
 
+#### 3.1 Initialization
+
+| Functionality                            | Complexity |
+| ---------------------------------------- | ---------- |
+| Reading and parsing the file.            | $O(\|E\|)$ |
+| Creating a disjoined set for each stage. | $O(\|V\|)$ |
+| Categorizing the roads.                  | $O(\|E\|)$ |
+
+#### 3.2 Analyzation
+
+| Functionality                                                                                                 | Complexity                      |
+| ------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| Single `DisjointSet.find` operation.                                                                          | $O(\|V\|)$                      |
+| Single `DisjointSet.union` operation.                                                                         | $O(2\cdot \|V\|)$               |
+| Attempt to union all disjoint sets of stages<br>reachable by roads available for **both** modes of travel.    | $O(\|E_{both}\| \cdot \|V\|)$   |
+| Attempt to union all disjoint sets of stages<br>reachable by roads available for **a single** mode of travel. | $O(\|E_{single}\| \cdot \|V\|)$ |
+| Checking if all stages are connected.                                                                         | $O(1)$                          |
+#### 3.3 Total complexity
+The total time complexity of the initialization phase comes out to $O(\|V\| + \|E\|)$.
+The total time complexity of the analyzation phase comes out to $O(\|V\| \cdot \|E\|)$.
+For the entire algorithm, the time complexity also comes out to $O(\|V\| \cdot \|E\|)$.
 
 ---
 
