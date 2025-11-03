@@ -1,12 +1,17 @@
-﻿6 11
-0 1 0
-0 4 0
-1 4 0
-3 5 0
-2 5 0
-0 2 1
-2 3 1
-3 4 1
-0 2 2
-2 5 2
-1 3 2
+﻿samples/1.in, Output: 4, Expected: 4, Succeeded: TrueTime: 0.00041747093200683594
+samples/1.in, Output: 4, Expected: 4, Succeeded: TrueTime: 0.0005681514739990234
+samples/2.in, Output: 8178, Expected: 8178, Succeeded: TrueTime: 0.043593645095825195
+samples/2.in, Output: 8178, Expected: 8178, Succeeded: TrueTime: 0.039519548416137695
+samples/3.in, Output: 11231, Expected: 11231, Succeeded: TrueTime: 0.02780914306640625
+samples/3.in, Output: 11231, Expected: 11231, Succeeded: TrueTime: 0.02565622329711914
+samples/4.in, Output: 10922, Expected: 10922, Succeeded: TrueTime: 0.053572654724121094
+samples/4.in, Output: 10922, Expected: 10922, Succeeded: TrueTime: 0.03932905197143555
+samples/5.in, Output: 14441, Expected: 14441, Succeeded: TrueTime: 0.03765439987182617
+samples/5.in, Output: 14441, Expected: 14441, Succeeded: TrueTime: 0.03430986404418945
+samples/6.in, Output: 13615, Expected: 13615, Succeeded: TrueTime: 0.044626474380493164
+samples/7.in, Output: 14998, Expected: 14998, Succeeded: TrueTime: 0.06261086463928223
+samples/8.in, Output: 16415, Expected: 16415, Succeeded: TrueTime: 0.06963467597961426
+samples/9.in, Output: 20861, Expected: 20861, Succeeded: TrueTime: 0.042481422424316406
+samples/10.in, Output: 22466, Expected: 22466, Succeeded: TrueTime: 0.06036877632141113
+samples/11.in, Output: 20499, Expected: 20499, Succeeded: TrueTime: 0.08332300186157227
+samples/12.in, Output: 0, Expected: 0, Succeeded: TrueTime: 0.0006203651428222656

@@ -49,6 +49,12 @@ The second optimization is born from the realization that all roads are looped t
 This second optimization has a far greater impact, where its effect can best be described as reducing the runtime of that piece of the algorithm from
 $O(\text{Road Types}\cdot \text{Roads})$ to just $O(\text{Roads})$, which is very impactful when additional types of roads would be added or the number of roads increases.
 
+Third and last optimization is the usage of a ranked disjoint set, 
+where the ranked part refers to how the disjoint set will keep its internal tree balanced.
+This balancing act ensures that, the operational cost of the `union` operation on the disjoint set goes from $O(n)$ to $O(log(n))$.
+When further enhanced with path compression during the `find` operation this can be further reduced to $O(α(n))$,
+which can almost be seen as $O(1)$ in practice, a major improvement over the $O(n)$ from the beginning.
+
 ---
 
 ### 2. Correctness Analysis

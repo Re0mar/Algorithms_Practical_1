@@ -52,6 +52,10 @@ def optRoadRemovalForFile(road_list):
             if disjoint_foot.union(road[0], road[1]) | disjoint_bus.union(road[0], road[1]):
                 used_road_count += 1
 
+    # Checking if we've already finished so we can skip the next part
+    if disjoint_foot.components == 1 and disjoint_bus.components == 1:
+        return len(twin_roads)+len(single_roads)-used_road_count
+
     # Checking the individual roads we need to add
     # Basically going from the base grid we just made to all yet unreached stages, adding roads as we do
     for road in single_roads:
