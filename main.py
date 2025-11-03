@@ -55,9 +55,6 @@ class DisjointGroup:
         self.components -= 1
         return True
 
-    def connected(self, x: int, y: int) -> bool:
-        return self.find(x) == self.find(y)
-
 
 def optRoadRemovalForFile(road_file):
     # Opening file
